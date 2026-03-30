@@ -6,347 +6,290 @@
 <title>康涛 - AI-Driven Frontend Engineer</title>
 <style>
   :root {
-    --primary: #6366f1;
-    --primary-light: #818cf8;
-    --accent: #06b6d4;
-    --green: #10b981;
-    --orange: #f59e0b;
-    --rose: #f43f5e;
-    --bg: #fafbff;
-    --card: #ffffff;
-    --text: #1e293b;
-    --text-secondary: #64748b;
-    --border: #e2e8f0;
+    --primary: #6366f1; --primary-light: #818cf8; --accent: #06b6d4;
+    --green: #10b981; --orange: #f59e0b; --rose: #f43f5e;
+    --bg: #fafbff; --card: #ffffff; --text: #1e293b;
+    --text-secondary: #64748b; --border: #e2e8f0;
     --glow: rgba(99, 102, 241, 0.15);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "PingFang SC", "Inter", "Microsoft YaHei", sans-serif;
-    background: var(--bg); color: var(--text);
-    line-height: 1.7; overflow-x: hidden;
-  }
+  html { scroll-behavior: smooth; }
+  body { font-family: "PingFang SC","Inter","Microsoft YaHei",sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; overflow-x: hidden; }
 
-  #neural-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-  #mouse-glow {
-    position: fixed; width: 400px; height: 400px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
-    transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
-    transition: left 0.3s ease, top 0.3s ease;
-  }
+  /* === Scroll Progress Bar === */
+  #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent)); z-index: 100; width: 0; transition: width 0.1s; }
 
-  /* Background Decorations */
-  .bg-decor { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; filter: blur(80px); }
-  .bg-decor-1 { width: 500px; height: 500px; top: -100px; left: -150px; background: rgba(99,102,241,0.06); animation: float1 20s ease-in-out infinite; }
-  .bg-decor-2 { width: 400px; height: 400px; top: 30%; right: -100px; background: rgba(6,182,212,0.05); animation: float2 25s ease-in-out infinite; }
-  .bg-decor-3 { width: 350px; height: 350px; bottom: 10%; left: -80px; background: rgba(16,185,129,0.04); animation: float3 22s ease-in-out infinite; }
-  .bg-decor-4 { width: 300px; height: 300px; top: 60%; right: -60px; background: rgba(99,102,241,0.04); animation: float1 18s ease-in-out infinite reverse; }
-  @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,40px)} }
-  @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-25px,35px)} }
-  @keyframes float3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
+  /* === Grid Texture Background === */
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0; pointer-events: none;
+  }
+  /* === Gradient Mesh Background === */
+  .mesh-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+  .mesh-blob {
+    position: absolute; border-radius: 50%; filter: blur(80px);
+    will-change: transform;
+  }
+  .mesh-blob-1 { width: 800px; height: 800px; top: -200px; left: -200px; background: rgba(99,102,241,0.12); animation: blob1 20s ease-in-out infinite; }
+  .mesh-blob-2 { width: 700px; height: 700px; top: 30%; right: -200px; background: rgba(6,182,212,0.1); animation: blob2 25s ease-in-out infinite; }
+  .mesh-blob-3 { width: 600px; height: 600px; bottom: 5%; left: -100px; background: rgba(16,185,129,0.08); animation: blob3 22s ease-in-out infinite; }
+  .mesh-blob-4 { width: 500px; height: 500px; top: 60%; right: -100px; background: rgba(244,63,94,0.06); animation: blob1 18s ease-in-out infinite reverse; }
+  .mesh-blob-5 { width: 650px; height: 650px; top: 10%; left: 40%; background: rgba(99,102,241,0.07); animation: blob2 30s ease-in-out infinite reverse; }
+  .mesh-blob-6 { width: 550px; height: 550px; bottom: 30%; right: 30%; background: rgba(6,182,212,0.06); animation: blob3 28s ease-in-out infinite reverse; }
+  @keyframes blob1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(80px,50px) scale(1.15)} 66%{transform:translate(-40px,80px) scale(0.9)} }
+  @keyframes blob2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(-60px,70px) scale(1.1)} 66%{transform:translate(50px,-50px) scale(0.85)} }
+  @keyframes blob3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(70px,-60px) scale(1.15)} }
+
+  /* === Mouse Magnetic Glow === */
+  #cursor-glow {
+    position: fixed; width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%);
+    transform: translate(-50%,-50%); pointer-events: none; z-index: 1;
+    transition: left 0.15s ease-out, top 0.15s ease-out, width 0.3s, height 0.3s;
+  }
 
   .container { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
 
-  /* Hero */
+  /* === Hero === */
   .hero { text-align: center; padding: 60px 0 40px; }
   .hero h1 {
     font-size: 48px; font-weight: 700; letter-spacing: 8px;
     background: linear-gradient(135deg, var(--primary), var(--accent));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 16px;
+    margin-bottom: 16px; opacity: 0; animation: heroIn 1s ease forwards 0.2s;
   }
-  .hero .tagline { font-size: 16px; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 1px; }
-  .hero .contact { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--text-secondary); }
-  .hero .contact span::before {
-    content: ''; display: inline-block; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--primary-light); margin-right: 6px; vertical-align: middle;
+  .hero .tagline {
+    font-size: 16px; color: var(--text-secondary); margin-bottom: 12px;
+    letter-spacing: 1px; opacity: 0; animation: heroIn 1s ease forwards 0.5s;
   }
-  .hero .intent { margin-top: 16px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-  .hero .intent-tag {
-    padding: 4px 14px; border-radius: 20px; font-size: 12px;
-    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.1));
-    border: 1px solid rgba(99,102,241,0.2); color: var(--primary);
-  }
+  .hero .contact { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--text-secondary); opacity: 0; animation: heroIn 1s ease forwards 0.7s; }
+  .hero .contact span::before { content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--primary-light); margin-right:6px; vertical-align:middle; }
+  .hero .intent { margin-top: 16px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; opacity: 0; animation: heroIn 1s ease forwards 0.9s; }
+  .hero .intent-tag { padding:4px 14px; border-radius:20px; font-size:12px; background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(6,182,212,0.1)); border:1px solid rgba(99,102,241,0.2); color:var(--primary); }
+  @keyframes heroIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-  /* Section */
-  .section { margin-bottom: 48px; opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
-  .section.visible { opacity: 1; transform: translateY(0); }
-  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  /* === Section with scroll reveal === */
+  .section { margin-bottom: 48px; }
+  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
   .section-header h2 {
     font-size: 20px; font-weight: 700; letter-spacing: 2px;
     background: linear-gradient(135deg, var(--primary), var(--accent));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .section-header::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+  .section-header::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); }
 
-  /* Skills */
-  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  /* === Scroll Reveal Animations === */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+  .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+  /* Stagger children */
+  .stagger-children .reveal { transition-delay: calc(var(--i, 0) * 0.08s); }
+
+  /* === 3D Card Tilt === */
+  .tilt-card {
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d; perspective: 800px;
+  }
+  .tilt-card:hover { box-shadow: 0 20px 40px rgba(99,102,241,0.12); }
+
+  /* === Skills === */
+  .skills-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .skill-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px;
-    transition: all 0.3s ease; position: relative; overflow: hidden;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:16px 18px;
+    position:relative; overflow:hidden; cursor:default;
   }
-  .skill-card::before {
-    content: ''; position: absolute; top: 0; left: 0;
-    width: 3px; height: 100%; background: linear-gradient(180deg, var(--primary), var(--accent));
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .skill-card:hover { border-color: var(--primary-light); box-shadow: 0 4px 20px var(--glow); transform: translateY(-2px); }
-  .skill-card:hover::before { opacity: 1; }
-  .skill-label { font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
-  .skill-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
-  .skill-desc b { color: var(--text); font-weight: 600; }
+  .skill-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:linear-gradient(180deg,var(--primary),var(--accent)); opacity:0; transition:opacity 0.3s; }
+  .skill-card:hover::before { opacity:1; }
+  .skill-label { font-size:13px; font-weight:600; color:var(--primary); margin-bottom:6px; }
+  .skill-desc { font-size:12.5px; color:var(--text-secondary); line-height:1.6; }
+  .skill-desc b { color:var(--text); font-weight:600; }
 
-  /* Project Card */
-  .project-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 24px; margin-bottom: 16px;
-    transition: all 0.4s ease; position: relative; overflow: hidden;
-  }
-  .project-card:hover { border-color: var(--primary-light); box-shadow: 0 8px 30px var(--glow); }
-  .project-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .project-name { font-size: 15px; font-weight: 700; }
-  .project-date { font-size: 12px; color: var(--text-secondary); padding: 2px 10px; border-radius: 12px; background: rgba(99,102,241,0.06); }
-  .project-intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.6; }
-  .project-intro b { color: var(--primary); font-weight: 600; }
-  .project-list { list-style: none; padding: 0; }
-  .project-list li {
-    font-size: 12.5px; color: var(--text-secondary);
-    padding: 4px 0 4px 16px; position: relative; line-height: 1.7;
-  }
-  .project-list li::before {
-    content: ''; position: absolute; left: 0; top: 11px;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--accent)); opacity: 0.6;
-  }
-  .project-list li b { color: var(--text); font-weight: 600; }
-  .project-list li .tag {
-    display: inline-block; font-size: 10px; padding: 1px 6px;
-    border-radius: 4px; background: rgba(99,102,241,0.08);
-    color: var(--primary); font-weight: 500; margin-right: 4px;
-  }
-
-  /* === AI Workflow Nodes === */
+  /* === AI Workflow === */
   .workflow-visual {
-    display: flex; align-items: center; justify-content: center;
-    gap: 0; margin: 20px 0 28px; flex-wrap: wrap;
-    padding: 24px 16px;
-    background: linear-gradient(135deg, rgba(99,102,241,0.03), rgba(6,182,212,0.03));
-    border-radius: 16px; border: 1px solid rgba(99,102,241,0.1);
+    display:flex; align-items:center; justify-content:center;
+    gap:0; margin:20px 0 28px; flex-wrap:wrap; padding:24px 16px;
+    background:linear-gradient(135deg,rgba(99,102,241,0.03),rgba(6,182,212,0.03));
+    border-radius:16px; border:1px solid rgba(99,102,241,0.1);
   }
-  .wf-node { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .wf-node { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .wf-dot {
-    width: 14px; height: 14px; border-radius: 50%;
-    background: var(--primary); position: relative;
+    width:14px; height:14px; border-radius:50%;
+    background:var(--primary); position:relative;
     animation: pulse 2s ease-in-out infinite;
     box-shadow: 0 0 12px rgba(99,102,241,0.4);
   }
   .wf-dot::after {
-    content: ''; position: absolute; top: 50%; left: 50%;
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 1.5px solid var(--primary-light); transform: translate(-50%,-50%);
+    content:''; position:absolute; top:50%; left:50%;
+    width:24px; height:24px; border-radius:50%;
+    border:1.5px solid var(--primary-light); transform:translate(-50%,-50%);
     animation: ring 2s ease-in-out infinite;
   }
-  .wf-label { font-size: 10px; color: var(--text-secondary); white-space: nowrap; font-weight: 500; }
-  .wf-arrow {
-    width: 40px; height: 2px; background: linear-gradient(90deg, var(--primary-light), var(--accent));
-    margin: 0 4px; margin-bottom: 20px; position: relative; opacity: 0.5;
-  }
-  .wf-arrow::after { content: ''; position: absolute; right: -4px; top: -3px; border: 4px solid transparent; border-left: 6px solid var(--accent); }
-  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.3);opacity:0.7;} }
-  @keyframes ring { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.6;} 50%{transform:translate(-50%,-50%) scale(1.6);opacity:0;} }
+  .wf-label { font-size:10px; color:var(--text-secondary); white-space:nowrap; font-weight:500; }
+  .wf-arrow { width:40px; height:2px; background:linear-gradient(90deg,var(--primary-light),var(--accent)); margin:0 4px; margin-bottom:20px; position:relative; opacity:0.5; }
+  .wf-arrow::after { content:''; position:absolute; right:-4px; top:-3px; border:4px solid transparent; border-left:6px solid var(--accent); }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.3);opacity:0.7} }
+  @keyframes ring { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.6} 50%{transform:translate(-50%,-50%) scale(1.6);opacity:0} }
   .wf-node:nth-child(3) .wf-dot{animation-delay:.3s} .wf-node:nth-child(5) .wf-dot{animation-delay:.6s}
   .wf-node:nth-child(7) .wf-dot{animation-delay:.9s} .wf-node:nth-child(9) .wf-dot{animation-delay:1.2s}
   .wf-node:nth-child(11) .wf-dot{animation-delay:1.5s}
-  .wf-stat { display: flex; justify-content: center; gap: 40px; margin-top: 16px; }
-  .wf-stat-item { text-align: center; }
+
+  /* === Counter Animation === */
+  .wf-stat { display:flex; justify-content:center; gap:40px; margin-top:16px; }
+  .wf-stat-item { text-align:center; }
   .wf-stat-num {
-    font-size: 28px; font-weight: 700;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size:28px; font-weight:700;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   }
-  .wf-stat-label { font-size: 11px; color: var(--text-secondary); }
+  .wf-stat-label { font-size:11px; color:var(--text-secondary); }
 
-  /* === Achievement Badges (鸿蒙) === */
-  .badges { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
-  .badge {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 14px; border-radius: 10px;
-    background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.06));
-    border: 1px solid rgba(16,185,129,0.2);
+  /* === Project Card === */
+  .project-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:24px; margin-bottom:16px;
+    position:relative; overflow:hidden;
   }
-  .badge-icon {
-    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; background: linear-gradient(135deg, var(--green), var(--accent));
-    color: white;
-  }
-  .badge-text { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
-  .badge-text strong { display: block; font-size: 14px; color: var(--text); font-weight: 700; }
+  .project-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .project-name { font-size:15px; font-weight:700; }
+  .project-date { font-size:12px; color:var(--text-secondary); padding:2px 10px; border-radius:12px; background:rgba(99,102,241,0.06); }
+  .project-intro { font-size:13px; color:var(--text-secondary); margin-bottom:12px; line-height:1.6; }
+  .project-intro b { color:var(--primary); font-weight:600; }
+  .project-list { list-style:none; padding:0; }
+  .project-list li { font-size:12.5px; color:var(--text-secondary); padding:4px 0 4px 16px; position:relative; line-height:1.7; }
+  .project-list li::before { content:''; position:absolute; left:0; top:11px; width:6px; height:6px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); opacity:0.6; }
+  .project-list li b { color:var(--text); font-weight:600; }
+  .project-list li .tag { display:inline-block; font-size:10px; padding:1px 6px; border-radius:4px; background:rgba(99,102,241,0.08); color:var(--primary); font-weight:500; margin-right:4px; }
 
-  /* === Performance Bars (H5) === */
-  .perf-bars { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
-  .perf-item { flex: 1; min-width: 120px; }
-  .perf-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; display: flex; justify-content: space-between; }
-  .perf-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
-  .perf-fill {
-    height: 100%; border-radius: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    width: 0; transition: width 1.5s ease;
-  }
-  .perf-item.animated .perf-fill { width: var(--w); }
+  /* === Badges === */
+  .badges { display:flex; gap:12px; margin:16px 0; flex-wrap:wrap; }
+  .badge { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:10px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(6,182,212,0.06)); border:1px solid rgba(16,185,129,0.2); }
+  .badge-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; background:linear-gradient(135deg,var(--green),var(--accent)); color:white; }
+  .badge-text { font-size:11px; color:var(--text-secondary); line-height:1.4; }
+  .badge-text strong { display:block; font-size:14px; color:var(--text); font-weight:700; }
 
-  /* === Platform Icons (智联) === */
-  .platforms { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
-  .platform-badge {
-    padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 500;
-    border: 1px solid var(--border); background: var(--card);
-    transition: all 0.3s; cursor: default;
-  }
-  .platform-badge:hover { border-color: var(--primary-light); box-shadow: 0 2px 12px var(--glow); transform: translateY(-2px); }
-  .platform-badge .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+  /* === Performance Bars === */
+  .perf-bars { display:flex; gap:16px; margin:16px 0; flex-wrap:wrap; }
+  .perf-item { flex:1; min-width:120px; }
+  .perf-label { font-size:11px; color:var(--text-secondary); margin-bottom:4px; display:flex; justify-content:space-between; }
+  .perf-bar { height:6px; border-radius:3px; background:var(--border); overflow:hidden; }
+  .perf-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--primary),var(--accent)); width:0; transition:width 1.5s cubic-bezier(0.16,1,0.3,1); }
+  .perf-item.animated .perf-fill { width:var(--w); }
 
-  /* === Micro Frontend Diagram (Alpha) === */
+  /* === Platform Badges === */
+  .platforms { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
+  .platform-badge { padding:6px 12px; border-radius:8px; font-size:11px; font-weight:500; border:1px solid var(--border); background:var(--card); transition:all 0.3s; cursor:default; }
+  .platform-badge:hover { border-color:var(--primary-light); box-shadow:0 2px 12px var(--glow); transform:translateY(-2px); }
+  .platform-badge .dot { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:6px; }
+
+  /* === Micro Frontend Diagram === */
   .mfe-diagram {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    margin: 16px 0; padding: 20px;
-    background: linear-gradient(135deg, rgba(244,63,94,0.03), rgba(99,102,241,0.03));
-    border-radius: 12px; border: 1px solid rgba(244,63,94,0.1);
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    margin:16px 0; padding:20px;
+    background:linear-gradient(135deg,rgba(244,63,94,0.03),rgba(99,102,241,0.03));
+    border-radius:12px; border:1px solid rgba(244,63,94,0.1);
   }
-  .mfe-main {
-    padding: 10px 18px; border-radius: 10px; font-size: 12px; font-weight: 600;
-    background: linear-gradient(135deg, var(--primary), var(--accent)); color: white;
-    text-align: center; position: relative;
-  }
-  .mfe-main small { display: block; font-size: 9px; font-weight: 400; opacity: 0.8; }
-  .mfe-branch { display: flex; flex-direction: column; gap: 6px; }
-  .mfe-sub {
-    padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 500;
-    border: 1px solid var(--border); background: var(--card);
-    display: flex; align-items: center; gap: 6px;
-    animation: mfe-fade 3s ease-in-out infinite;
-  }
-  .mfe-sub:nth-child(2) { animation-delay: 0.5s; }
-  .mfe-sub:nth-child(3) { animation-delay: 1s; }
-  .mfe-sub .dot { width: 8px; height: 8px; border-radius: 2px; }
+  .mfe-main { padding:10px 18px; border-radius:10px; font-size:12px; font-weight:600; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; text-align:center; }
+  .mfe-main small { display:block; font-size:9px; font-weight:400; opacity:0.8; }
+  .mfe-branch { display:flex; flex-direction:column; gap:6px; }
+  .mfe-sub { padding:6px 12px; border-radius:8px; font-size:11px; font-weight:500; border:1px solid var(--border); background:var(--card); display:flex; align-items:center; gap:6px; animation:mfe-fade 3s ease-in-out infinite; }
+  .mfe-sub:nth-child(2){animation-delay:.5s} .mfe-sub:nth-child(3){animation-delay:1s}
+  .mfe-sub .dot { width:8px; height:8px; border-radius:2px; }
   @keyframes mfe-fade { 0%,100%{opacity:1;transform:translateX(0)} 50%{opacity:0.7;transform:translateX(3px)} }
-  .mfe-arrow { width: 30px; height: 2px; background: var(--border); position: relative; }
-  .mfe-arrow::after { content: ''; position: absolute; right: -3px; top: -3px; border: 4px solid transparent; border-left: 5px solid var(--text-secondary); }
+  .mfe-arrow { width:30px; height:2px; background:var(--border); position:relative; }
+  .mfe-arrow::after { content:''; position:absolute; right:-3px; top:-3px; border:4px solid transparent; border-left:5px solid var(--text-secondary); }
 
-  /* === Capability Grid (劳动用工) === */
-  .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 16px 0; }
-  .cap-item {
-    text-align: center; padding: 10px 6px; border-radius: 10px;
-    background: var(--card); border: 1px solid var(--border);
-    transition: all 0.3s; cursor: default;
+  /* === Capability Grid === */
+  .cap-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:16px 0; }
+  .cap-item { text-align:center; padding:10px 6px; border-radius:10px; background:var(--card); border:1px solid var(--border); transition:all 0.3s; cursor:default; }
+  .cap-item:hover { border-color:var(--primary-light); box-shadow:0 2px 12px var(--glow); transform:translateY(-2px); }
+  .cap-icon { font-size:20px; margin-bottom:4px; }
+  .cap-label { font-size:10px; color:var(--text-secondary); }
+
+  /* === Timeline === */
+  .timeline { position:relative; padding-left:28px; }
+  .timeline::before { content:''; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background:linear-gradient(180deg,var(--primary),var(--accent),var(--border)); }
+  .timeline-item { position:relative; margin-bottom:20px; padding-left:20px; }
+  .timeline-item::before { content:''; position:absolute; left:-24px; top:6px; width:10px; height:10px; border-radius:50%; background:var(--card); border:2px solid var(--primary); z-index:1; }
+  .timeline-item:first-child::before { background:var(--primary); box-shadow:0 0 8px rgba(99,102,241,0.4); }
+  .tl-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2px; }
+  .tl-company { font-size:14px; font-weight:600; }
+  .tl-role { font-size:12px; color:var(--text-secondary); }
+  .tl-date { font-size:12px; color:var(--text-secondary); }
+  .tl-desc { font-size:12.5px; color:var(--text-secondary); }
+  .tl-desc b { color:var(--text); font-weight:600; }
+
+  /* === Education === */
+  .edu-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .edu-info { font-size:14px; } .edu-school { font-weight:600; }
+  .edu-date { font-size:12px; color:var(--text-secondary); }
+
+  /* === Note === */
+  .note-card { background:linear-gradient(135deg,rgba(99,102,241,0.04),rgba(6,182,212,0.04)); border:1px solid rgba(99,102,241,0.15); border-radius:12px; padding:16px 20px; font-size:13px; color:var(--text-secondary); line-height:1.7; }
+
+  .footer { text-align:center; padding:40px 0 20px; font-size:11px; color:var(--text-secondary); opacity:0.5; }
+
+  /* === Section Title Text Decode Effect === */
+  .decode-text { display: inline-block; }
+  .decode-text .char { display: inline-block; opacity: 0; transition: opacity 0.1s; }
+  .decode-text.decoded .char { opacity: 1; }
+
+  /* === Responsive === */
+  @media (max-width:768px) {
+    .container{padding:20px 16px 60px} .hero{padding:40px 0 24px} .hero h1{font-size:38px;letter-spacing:4px}
+    .hero .contact{gap:12px;font-size:12px} .skills-grid{grid-template-columns:1fr}
+    .wf-stat{gap:24px} .wf-stat-num{font-size:24px} .badges{gap:8px}
+    .badge{padding:6px 10px} .badge-text strong{font-size:13px}
+    .tl-header{flex-direction:column;gap:2px}
   }
-  .cap-item:hover { border-color: var(--primary-light); box-shadow: 0 2px 12px var(--glow); transform: translateY(-2px); }
-  .cap-icon { font-size: 20px; margin-bottom: 4px; }
-  .cap-label { font-size: 10px; color: var(--text-secondary); }
-
-  /* Timeline */
-  .timeline { position: relative; padding-left: 28px; }
-  .timeline::before {
-    content: ''; position: absolute; left: 8px; top: 4px; bottom: 4px;
-    width: 2px; background: linear-gradient(180deg, var(--primary), var(--accent), var(--border));
-  }
-  .timeline-item { position: relative; margin-bottom: 20px; padding-left: 20px; }
-  .timeline-item::before {
-    content: ''; position: absolute; left: -24px; top: 6px;
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--card); border: 2px solid var(--primary); z-index: 1;
-  }
-  .timeline-item:first-child::before { background: var(--primary); box-shadow: 0 0 8px rgba(99,102,241,0.4); }
-  .tl-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
-  .tl-company { font-size: 14px; font-weight: 600; }
-  .tl-role { font-size: 12px; color: var(--text-secondary); }
-  .tl-date { font-size: 12px; color: var(--text-secondary); }
-  .tl-desc { font-size: 12.5px; color: var(--text-secondary); }
-  .tl-desc b { color: var(--text); font-weight: 600; }
-
-  /* Education */
-  .edu-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .edu-info { font-size: 14px; }
-  .edu-school { font-weight: 600; }
-  .edu-date { font-size: 12px; color: var(--text-secondary); }
-
-  /* Note */
-  .note-card {
-    background: linear-gradient(135deg, rgba(99,102,241,0.04), rgba(6,182,212,0.04));
-    border: 1px solid rgba(99,102,241,0.15);
-    border-radius: 12px; padding: 16px 20px;
-    font-size: 13px; color: var(--text-secondary); line-height: 1.7;
-  }
-
-  .footer { text-align: center; padding: 40px 0 20px; font-size: 11px; color: var(--text-secondary); opacity: 0.5; }
-
-  /* Tablet */
-  @media (max-width: 768px) {
-    .container { padding: 20px 16px 60px; }
-    .hero { padding: 40px 0 24px; }
-    .hero h1 { font-size: 38px; letter-spacing: 4px; }
-    .hero .contact { gap: 12px; font-size: 12px; }
-    .skills-grid { grid-template-columns: 1fr; }
-    .wf-stat { gap: 24px; }
-    .wf-stat-num { font-size: 24px; }
-    .badges { gap: 8px; }
-    .badge { padding: 6px 10px; }
-    .badge-text strong { font-size: 13px; }
-    .tl-header { flex-direction: column; gap: 2px; }
-  }
-
-  /* Mobile */
-  @media (max-width: 480px) {
-    .hero h1 { font-size: 30px; letter-spacing: 3px; }
-    .hero .tagline { font-size: 13px; }
-    .hero .contact { flex-direction: column; gap: 6px; align-items: center; }
-    .hero .intent { flex-direction: column; align-items: center; }
-    .section-header h2 { font-size: 17px; }
-    .project-card { padding: 16px; }
-    .project-top { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .workflow-visual { padding: 16px 8px; flex-wrap: wrap; justify-content: center; gap: 4px; }
-    .wf-arrow { width: 20px; }
-    .wf-label { font-size: 9px; }
-    .wf-stat { flex-wrap: wrap; gap: 16px; }
-    .wf-stat-num { font-size: 22px; }
-    .badges { flex-direction: column; }
-    .perf-bars { flex-direction: column; }
-    .platforms { gap: 6px; }
-    .platform-badge { font-size: 10px; padding: 4px 10px; }
-    .mfe-diagram { flex-direction: column; padding: 14px; }
-    .mfe-arrow { width: 2px; height: 20px; margin: 0; }
-    .mfe-arrow::after { right: auto; top: auto; bottom: -4px; left: -3px; border: 4px solid transparent; border-top: 5px solid var(--text-secondary); border-left: 4px solid transparent; }
-    .cap-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .cap-item { padding: 8px 4px; }
-    .cap-icon { font-size: 18px; }
-    .cap-label { font-size: 9px; }
-    .skill-card { padding: 12px 14px; }
-    .skill-label { font-size: 12px; }
-    .skill-desc { font-size: 11.5px; }
-    .project-list li { font-size: 11.5px; }
-    .bg-decor-1, .bg-decor-2, .bg-decor-3, .bg-decor-4 { opacity: 0.6; }
-    #mouse-glow { display: none; }
+  @media (max-width:480px) {
+    .hero h1{font-size:30px;letter-spacing:3px} .hero .tagline{font-size:13px}
+    .hero .contact{flex-direction:column;gap:6px;align-items:center}
+    .hero .intent{flex-direction:column;align-items:center}
+    .section-header h2{font-size:17px} .project-card{padding:16px}
+    .project-top{flex-direction:column;align-items:flex-start;gap:4px}
+    .workflow-visual{padding:16px 8px;flex-wrap:wrap;justify-content:center;gap:4px}
+    .wf-arrow{width:20px} .wf-label{font-size:9px}
+    .wf-stat{flex-wrap:wrap;gap:16px} .wf-stat-num{font-size:22px}
+    .badges{flex-direction:column} .perf-bars{flex-direction:column}
+    .platforms{gap:6px} .platform-badge{font-size:10px;padding:4px 10px}
+    .mfe-diagram{flex-direction:column;padding:14px}
+    .mfe-arrow{width:2px;height:20px;margin:0}
+    .cap-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+    .cap-item{padding:8px 4px} .cap-icon{font-size:18px} .cap-label{font-size:9px}
+    .skill-card{padding:12px 14px} .skill-label{font-size:12px} .skill-desc{font-size:11.5px}
+    .project-list li{font-size:11.5px} #cursor-glow{display:none}
   }
 </style>
 </head>
 <body>
 
-<!-- Lock Screen -->
 <div id="lock-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:#fff;"></div>
 
-<canvas id="neural-bg"></canvas>
-<div id="mouse-glow"></div>
-<div class="bg-decor bg-decor-1"></div>
-<div class="bg-decor bg-decor-2"></div>
-<div class="bg-decor bg-decor-3"></div>
-<div class="bg-decor bg-decor-4"></div>
+<div id="scroll-progress"></div>
+<div class="mesh-bg">
+  <div class="mesh-blob mesh-blob-1"></div>
+  <div class="mesh-blob mesh-blob-2"></div>
+  <div class="mesh-blob mesh-blob-3"></div>
+  <div class="mesh-blob mesh-blob-4"></div>
+  <div class="mesh-blob mesh-blob-5"></div>
+  <div class="mesh-blob mesh-blob-6"></div>
+</div>
+<div id="cursor-glow"></div>
 
 <div class="container" id="main-content" style="display:none;">
 
-  <!-- Hero -->
-  <div class="hero section" style="opacity:1;transform:none;">
+  <div class="hero">
     <h1>康涛</h1>
     <div class="tagline">AI-Driven Frontend Engineer</div>
     <div class="contact">
@@ -360,135 +303,116 @@
     </div>
   </div>
 
-  <!-- Skills -->
   <div class="section">
-    <div class="section-header"><h2>专业技能</h2></div>
-    <div class="skills-grid">
-      <div class="skill-card"><div class="skill-label">AI工程化</div><div class="skill-desc">熟练使用 <b>Claude Code / Cursor / Copilot</b> 等AI编码工具，掌握<b>提示词工程、Agent编排、MCP协议、Skill/Workflow自动化</b>开发，具备AI驱动全流程研发提效的落地经验。</div></div>
-      <div class="skill-card"><div class="skill-label">语言与框架</div><div class="skill-desc">精通 <b>HTML/CSS、JavaScript/TypeScript</b>，精通 <b>Vue2/3</b> 全家桶，熟练使用 <b>React、AngularJS、UniApp、Taro</b>，可快速上手不同技术栈项目。</div></div>
-      <div class="skill-card"><div class="skill-label">鸿蒙开发</div><div class="skill-desc">掌握 HarmonyOS <b>Stage模型、ArkTS/ArkUI</b>、响应式状态管理（@State/@Link/@Provide/@Observed等）、多Module架构（<b>HAP/HAR/HSP</b>），具备从0到1独立交付鸿蒙应用的能力。</div></div>
-      <div class="skill-card"><div class="skill-label">架构能力</div><div class="skill-desc">具备<b>微前端架构、Hybrid架构、模块化分层架构</b>的选型与落地经验，关注可扩展性与可维护性。</div></div>
-      <div class="skill-card"><div class="skill-label">工程化</div><div class="skill-desc">熟练掌握 <b>Webpack/Vite</b> 插件开发、<b>CI/CD</b>、脚手架搭建、性能优化（首屏/长列表/SSR/SEO）、监控体系搭建（<b>阿里云ARMS</b>、埋点、用户路径追踪）。</div></div>
-      <div class="skill-card"><div class="skill-label">协作与集成</div><div class="skill-desc">熟练掌握 <b>Git Flow、rebase、worktree</b> 等高级工作流，具备 <b>WebSocket/HTTP</b> 通信层封装、<b>企业微信JSSDK、飞书OpenAPI</b> 等三方集成经验。</div></div>
+    <div class="section-header reveal"><h2>专业技能</h2></div>
+    <div class="skills-grid stagger-children">
+      <div class="skill-card tilt-card reveal" style="--i:0"><div class="skill-label">AI工程化</div><div class="skill-desc">熟练使用 <b>Claude Code / Cursor / Copilot</b> 等AI编码工具，掌握<b>提示词工程、Agent编排、MCP协议、Skill/Workflow自动化</b>开发，具备AI驱动全流程研发提效的落地经验。</div></div>
+      <div class="skill-card tilt-card reveal" style="--i:1"><div class="skill-label">语言与框架</div><div class="skill-desc">精通 <b>HTML/CSS、JavaScript/TypeScript</b>，精通 <b>Vue2/3</b> 全家桶，熟练使用 <b>React、AngularJS、UniApp、Taro</b>，可快速上手不同技术栈项目。</div></div>
+      <div class="skill-card tilt-card reveal" style="--i:2"><div class="skill-label">鸿蒙开发</div><div class="skill-desc">掌握 HarmonyOS <b>Stage模型、ArkTS/ArkUI</b>、响应式状态管理（@State/@Link/@Provide/@Observed等）、多Module架构（<b>HAP/HAR/HSP</b>），具备从0到1独立交付鸿蒙应用的能力。</div></div>
+      <div class="skill-card tilt-card reveal" style="--i:3"><div class="skill-label">架构能力</div><div class="skill-desc">具备<b>微前端架构、Hybrid架构、模块化分层架构</b>的选型与落地经验，关注可扩展性与可维护性。</div></div>
+      <div class="skill-card tilt-card reveal" style="--i:4"><div class="skill-label">工程化</div><div class="skill-desc">熟练掌握 <b>Webpack/Vite</b> 插件开发、<b>CI/CD</b>、脚手架搭建、性能优化（首屏/长列表/SSR/SEO）、监控体系搭建（<b>阿里云ARMS</b>、埋点、用户路径追踪）。</div></div>
+      <div class="skill-card tilt-card reveal" style="--i:5"><div class="skill-label">协作与集成</div><div class="skill-desc">熟练掌握 <b>Git Flow、rebase、worktree</b> 等高级工作流，具备 <b>WebSocket/HTTP</b> 通信层封装、<b>企业微信JSSDK、飞书OpenAPI</b> 等三方集成经验。</div></div>
     </div>
   </div>
 
-  <!-- Projects -->
   <div class="section">
-    <div class="section-header"><h2>项目经历</h2></div>
+    <div class="section-header reveal"><h2>项目经历</h2></div>
 
-    <!-- AI Workflow -->
-    <div class="project-card" style="border-color:rgba(99,102,241,0.25);background:linear-gradient(135deg,#fff,rgba(99,102,241,0.02));">
+    <!-- AI -->
+    <div class="project-card tilt-card reveal-left" style="border-color:rgba(99,102,241,0.25);background:linear-gradient(135deg,#fff,rgba(99,102,241,0.02));">
       <div class="project-top">
         <span class="project-name" style="background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI驱动开发自动化体系建设</span>
         <span class="project-date">2025.03-至今</span>
       </div>
       <div class="project-intro">基于 <b>Claude Code</b> 构建覆盖多项目的AI工程化体系，实现从需求到上线的全流程自动化。</div>
-      <div class="workflow-visual">
-        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">设计稿获取</div></div>
-        <div class="wf-arrow"></div>
-        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">Agent分析</div></div>
-        <div class="wf-arrow"></div>
-        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">任务规划</div></div>
-        <div class="wf-arrow"></div>
-        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">视觉编码</div></div>
-        <div class="wf-arrow"></div>
-        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">逻辑编码</div></div>
-        <div class="wf-arrow"></div>
+      <div class="workflow-visual reveal-scale">
+        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">设计稿获取</div></div><div class="wf-arrow"></div>
+        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">Agent分析</div></div><div class="wf-arrow"></div>
+        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">任务规划</div></div><div class="wf-arrow"></div>
+        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">视觉编码</div></div><div class="wf-arrow"></div>
+        <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">逻辑编码</div></div><div class="wf-arrow"></div>
         <div class="wf-node"><div class="wf-dot"></div><div class="wf-label">上线准备</div></div>
       </div>
-      <div class="wf-stat">
-        <div class="wf-stat-item"><div class="wf-stat-num">79%</div><div class="wf-stat-label">开发提效</div></div>
+      <div class="wf-stat" id="ai-stats">
+        <div class="wf-stat-item"><div class="wf-stat-num" data-target="79">0</div><div class="wf-stat-label">开发提效%</div></div>
         <div class="wf-stat-item"><div class="wf-stat-num">~0</div><div class="wf-stat-label">逻辑Bug率</div></div>
-        <div class="wf-stat-item"><div class="wf-stat-num">100%</div><div class="wf-stat-label">复杂需求交付</div></div>
-        <div class="wf-stat-item"><div class="wf-stat-num">60%+</div><div class="wf-stat-label">编码效率提升</div></div>
+        <div class="wf-stat-item"><div class="wf-stat-num" data-target="100">0</div><div class="wf-stat-label">复杂需求交付%</div></div>
+        <div class="wf-stat-item"><div class="wf-stat-num" data-target="60">0</div><div class="wf-stat-label">编码效率提升%+</div></div>
       </div>
-      <ul class="project-list" style="margin-top:16px;">
-        <li><span class="tag">活动工作流</span>基于 <b>Claude Code SDK</b> 开发节点驱动的<b>工作流编排引擎</b>+Web Dashboard，串联设计稿获取（蓝湖/Figma MCP）→ Agent信息分析 → 任务规划 → 两遍分离编码 → 上线准备全流程，支持增量开发与状态恢复。</li>
-        <li><span class="tag">跨平台同步</span>设计<b>多Agent协作</b>的Android/iOS→HarmonyOS功能复刻流程，专家Agent分析 → 实现Agent编码 → 审查Agent代码审查三级流水线。</li>
-        <li><span class="tag">提示词工程</span>沉淀完整<b>提示词工程</b>体系（rules/patterns/agents/hooks/memory/skills/MCP），开发十余个业务skill覆盖提测通知、上线准备、编译错误自修复、设计稿处理、Mock生成等。</li>
-        <li><span class="tag">AI编码</span>主力使用 <b>Claude Code</b> 日常开发，熟悉不同模型特性与上下文策略，两天完成Chrome Extension、三天完成OSS工作台。</li>
+      <ul class="project-list stagger-children" style="margin-top:16px;">
+        <li class="reveal" style="--i:0"><span class="tag">活动工作流</span>基于 <b>Claude Code SDK</b> 开发节点驱动的<b>工作流编排引擎</b>+Web Dashboard，串联设计稿获取（蓝湖/Figma MCP）→ Agent信息分析 → 任务规划 → 两遍分离编码 → 上线准备全流程，支持增量开发与状态恢复。</li>
+        <li class="reveal" style="--i:1"><span class="tag">跨平台同步</span>设计<b>多Agent协作</b>的Android/iOS→HarmonyOS功能复刻流程，专家Agent分析 → 实现Agent编码 → 审查Agent代码审查三级流水线。</li>
+        <li class="reveal" style="--i:2"><span class="tag">提示词工程</span>沉淀完整<b>提示词工程</b>体系（rules/patterns/agents/hooks/memory/skills/MCP），开发十余个业务skill覆盖提测通知、上线准备、编译错误自修复、设计稿处理、Mock生成等。</li>
+        <li class="reveal" style="--i:3"><span class="tag">AI编码</span>主力使用 <b>Claude Code</b> 日常开发，熟悉不同模型特性与上下文策略，两天完成Chrome Extension、三天完成OSS工作台。</li>
       </ul>
     </div>
 
-    <!-- HarmonyOS with Badges -->
-    <div class="project-card">
-      <div class="project-top">
-        <span class="project-name">贴贴鸿蒙App</span>
-        <span class="project-date">2025.01-2025.04</span>
-      </div>
+    <!-- HarmonyOS -->
+    <div class="project-card tilt-card reveal-right">
+      <div class="project-top"><span class="project-name">贴贴鸿蒙App</span><span class="project-date">2025.01-2025.04</span></div>
       <div class="project-intro">公司核心产品"贴贴"的<b>鸿蒙原生应用</b>，独立1人不到3个月从0到1开发上架，获华为激励金10万元。</div>
       <div class="badges">
-        <div class="badge"><div class="badge-icon">1</div><div class="badge-text"><strong>独立开发</strong>全程1人完成</div></div>
-        <div class="badge"><div class="badge-icon">&lt;3</div><div class="badge-text"><strong>不到3个月</strong>从0到1上架</div></div>
-        <div class="badge"><div class="badge-icon">$</div><div class="badge-text"><strong>10万元</strong>华为激励金</div></div>
+        <div class="badge reveal-scale" style="--i:0"><div class="badge-icon">1</div><div class="badge-text"><strong>独立开发</strong>全程1人完成</div></div>
+        <div class="badge reveal-scale" style="--i:1"><div class="badge-icon">&lt;3</div><div class="badge-text"><strong>不到3个月</strong>从0到1上架</div></div>
+        <div class="badge reveal-scale" style="--i:2"><div class="badge-icon">$</div><div class="badge-text"><strong>10万元</strong>华为激励金</div></div>
       </div>
-      <ul class="project-list">
-        <li>基于 <b>Stage模型+ArkTS/ArkUI</b> 声明式开发，通过 <b>Navigation路由栈</b> 管理页面跳转与参数传递。</li>
-        <li>通过 <b>@State/@Link/@Provide/@Consume/@Observed/@ObjectLink</b> 装饰器体系管理组件状态，配合 <b>AppStorage+PersistentStorage</b> 实现应用级状态持久化。</li>
-        <li>使用 <b>LazyForEach+@Reusable组件复用池+cachedCount</b> 优化信息流长列表。</li>
-        <li>基于 <b>Permission API</b> 封装统一动态权限请求，覆盖麦克风、相册、剪切板、通知、存储、位置等场景。</li>
-        <li>通过<b>长时任务（ContinuousTask）</b>实现后台保活，基于 <b>NodeController+BuilderNode</b> 离屏渲染，封装 <b>WebView</b> 容器承载H5。</li>
-        <li>使用 <b>@ohos/dataorm</b> 管理本地消息数据库，基于 <b>TaskPool</b> 处理异步任务避免阻塞UI线程。</li>
-        <li>通过 <b>@Builder/@BuilderParam</b> 实现组件插槽复用，<b>animateTo+transition</b> 开发转场动效。</li>
-        <li>采用<b>单UIAbility+Navigation</b>架构，通过 <b>HAP+HAR+HSP</b> 多Module分层按需加载。</li>
-        <li>接入 <b>HiLog</b> 日志与 <b>HiAppEvent</b> 埋点，完成 <b>DevEco Studio</b> 签名上架全流程。</li>
+      <ul class="project-list stagger-children">
+        <li class="reveal" style="--i:0">基于 <b>Stage模型+ArkTS/ArkUI</b> 声明式开发，通过 <b>Navigation路由栈</b> 管理页面跳转与参数传递。</li>
+        <li class="reveal" style="--i:1">通过 <b>@State/@Link/@Provide/@Consume/@Observed/@ObjectLink</b> 装饰器体系管理组件状态，配合 <b>AppStorage+PersistentStorage</b> 实现应用级状态持久化。</li>
+        <li class="reveal" style="--i:2">使用 <b>LazyForEach+@Reusable组件复用池+cachedCount</b> 优化信息流长列表。</li>
+        <li class="reveal" style="--i:3">基于 <b>Permission API</b> 封装统一动态权限请求，覆盖麦克风、相册、剪切板、通知、存储、位置等场景。</li>
+        <li class="reveal" style="--i:4">通过<b>长时任务（ContinuousTask）</b>实现后台保活，基于 <b>NodeController+BuilderNode</b> 离屏渲染，封装 <b>WebView</b> 容器承载H5。</li>
+        <li class="reveal" style="--i:5">使用 <b>@ohos/dataorm</b> 管理本地消息数据库，基于 <b>TaskPool</b> 处理异步任务避免阻塞UI线程。</li>
+        <li class="reveal" style="--i:6">通过 <b>@Builder/@BuilderParam</b> 实现组件插槽复用，<b>animateTo+transition</b> 开发转场动效。</li>
+        <li class="reveal" style="--i:7">采用<b>单UIAbility+Navigation</b>架构，通过 <b>HAP+HAR+HSP</b> 多Module分层按需加载。</li>
+        <li class="reveal" style="--i:8">接入 <b>HiLog</b> 日志与 <b>HiAppEvent</b> 埋点，完成 <b>DevEco Studio</b> 签名上架全流程。</li>
       </ul>
     </div>
 
-    <!-- H5 with Performance Bars -->
-    <div class="project-card">
-      <div class="project-top">
-        <span class="project-name">贴贴业务线Hybrid H5</span>
-        <span class="project-date">2025.05-至今</span>
-      </div>
+    <!-- H5 -->
+    <div class="project-card tilt-card reveal-left">
+      <div class="project-top"><span class="project-name">贴贴业务线Hybrid H5</span><span class="project-date">2025.05-至今</span></div>
       <div class="project-intro">负责公司双端toC产品的公共页面、活动营销页面、支付页面及部分原生小游戏开发。</div>
       <div class="perf-bars" id="perf-bars">
-        <div class="perf-item" style="--w:80%"><div class="perf-label"><span>页面创建提速</span><span>80%</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
-        <div class="perf-item" style="--w:67%"><div class="perf-label"><span>白屏时间 3s→1s</span><span>67%</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
-        <div class="perf-item" style="--w:50%"><div class="perf-label"><span>问题定位提速</span><span>50%+</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
+        <div class="perf-item reveal" style="--w:80%;--i:0"><div class="perf-label"><span>页面创建提速</span><span>80%</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
+        <div class="perf-item reveal" style="--w:67%;--i:1"><div class="perf-label"><span>白屏时间 3s→1s</span><span>67%</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
+        <div class="perf-item reveal" style="--w:50%;--i:2"><div class="perf-label"><span>问题定位提速</span><span>50%+</span></div><div class="perf-bar"><div class="perf-fill"></div></div></div>
       </div>
-      <ul class="project-list">
-        <li>通过 <b>plop</b> 脚手架+远程OSS配置搭建标准化工程体系，封装Native Bridge鉴权前置流程。</li>
-        <li>开发 <b>vite性能监控插件</b> 零侵入接入 <b>阿里云ARMS</b>，采集Bridge耗时、FCP、TTI、白屏率等指标。</li>
-        <li>实现 <b>H5离线包方案</b>，构建时CDN资源自动映射本地、运行时降级回退。</li>
-        <li>开发 <b>Chrome Extension</b> 调试工具，模拟Native Bridge注入，生产环境自动拦截写操作。</li>
-        <li>开发 <b>OSS资源管理工作台</b> 替代云控制台直操，权限收窄降低误操作风险。</li>
+      <ul class="project-list stagger-children">
+        <li class="reveal" style="--i:0">通过 <b>plop</b> 脚手架+远程OSS配置搭建标准化工程体系，封装Native Bridge鉴权前置流程。</li>
+        <li class="reveal" style="--i:1">开发 <b>vite性能监控插件</b> 零侵入接入 <b>阿里云ARMS</b>，采集Bridge耗时、FCP、TTI、白屏率等指标。</li>
+        <li class="reveal" style="--i:2">实现 <b>H5离线包方案</b>，构建时CDN资源自动映射本地、运行时降级回退。</li>
+        <li class="reveal" style="--i:3">开发 <b>Chrome Extension</b> 调试工具，模拟Native Bridge注入，生产环境自动拦截写操作。</li>
+        <li class="reveal" style="--i:4">开发 <b>OSS资源管理工作台</b> 替代云控制台直操，权限收窄降低误操作风险。</li>
       </ul>
     </div>
 
-    <!-- Zhilian with Platform Badges -->
-    <div class="project-card">
-      <div class="project-top">
-        <span class="project-name">智联招聘C端（多端小程序 + Web站群）</span>
-        <span class="project-date">2024.04-2024.12</span>
-      </div>
+    <!-- Zhilian -->
+    <div class="project-card tilt-card reveal-right">
+      <div class="project-top"><span class="project-name">智联招聘C端（多端小程序 + Web站群）</span><span class="project-date">2024.04-2024.12</span></div>
       <div class="project-intro"><b>UniApp</b> 多端小程序 + <b>SSR</b> Web站群。</div>
       <div class="platforms">
-        <span class="platform-badge"><span class="dot" style="background:#07c160"></span>微信</span>
-        <span class="platform-badge"><span class="dot" style="background:#000"></span>抖音</span>
-        <span class="platform-badge"><span class="dot" style="background:#ff4906"></span>快手</span>
-        <span class="platform-badge"><span class="dot" style="background:#1677ff"></span>支付宝</span>
-        <span class="platform-badge"><span class="dot" style="background:var(--primary)"></span>PC Web</span>
-        <span class="platform-badge"><span class="dot" style="background:var(--accent)"></span>H5 SSR</span>
+        <span class="platform-badge reveal-scale" style="--i:0"><span class="dot" style="background:#07c160"></span>微信</span>
+        <span class="platform-badge reveal-scale" style="--i:1"><span class="dot" style="background:#000"></span>抖音</span>
+        <span class="platform-badge reveal-scale" style="--i:2"><span class="dot" style="background:#ff4906"></span>快手</span>
+        <span class="platform-badge reveal-scale" style="--i:3"><span class="dot" style="background:#1677ff"></span>支付宝</span>
+        <span class="platform-badge reveal-scale" style="--i:4"><span class="dot" style="background:var(--primary)"></span>PC Web</span>
+        <span class="platform-badge reveal-scale" style="--i:5"><span class="dot" style="background:var(--accent)"></span>H5 SSR</span>
       </div>
-      <ul class="project-list">
-        <li>接入 <b>云信IM SDK</b> 长连接，裁剪SDK减小主包体积，通过策略+工厂模式实现多消息类型卡片渲染。</li>
-        <li>通过 <b>git submodule</b> 拆分公共库，按业务Tab <b>小程序分包</b>+预加载压缩主包体积。</li>
-        <li>封装多端兼容hook，抹平微信/支付宝/抖音/快手的API与样式差异。</li>
-        <li>植入多层级异常上报（应用/页面/业务/接口），通过pageId+trackChains+trackId追踪用户操作路径。</li>
-        <li>负责PC主站及客户端内嵌H5的 <b>SSR</b> 页面功能迭代与SEO优化，熟悉企业级SSR中台研发模式。</li>
+      <ul class="project-list stagger-children">
+        <li class="reveal" style="--i:0">接入 <b>云信IM SDK</b> 长连接，裁剪SDK减小主包体积，通过策略+工厂模式实现多消息类型卡片渲染。</li>
+        <li class="reveal" style="--i:1">通过 <b>git submodule</b> 拆分公共库，按业务Tab <b>小程序分包</b>+预加载压缩主包体积。</li>
+        <li class="reveal" style="--i:2">封装多端兼容hook，抹平微信/支付宝/抖音/快手的API与样式差异。</li>
+        <li class="reveal" style="--i:3">植入多层级异常上报（应用/页面/业务/接口），通过pageId+trackChains+trackId追踪用户操作路径。</li>
+        <li class="reveal" style="--i:4">负责PC主站及客户端内嵌H5的 <b>SSR</b> 页面功能迭代与SEO优化，熟悉企业级SSR中台研发模式。</li>
       </ul>
     </div>
 
-    <!-- Alpha with Micro Frontend Diagram -->
-    <div class="project-card">
-      <div class="project-top">
-        <span class="project-name">Alpha律所数字化平台 + 企业微信自建应用</span>
-        <span class="project-date">2022.08-2023.12</span>
-      </div>
+    <!-- Alpha -->
+    <div class="project-card tilt-card reveal-left">
+      <div class="project-top"><span class="project-name">Alpha律所数字化平台 + 企业微信自建应用</span><span class="project-date">2022.08-2023.12</span></div>
       <div class="project-intro">律师办案综合系统（CRM、财务、项目、计时、文档等）+ 企微自建应用。</div>
-      <div class="mfe-diagram">
+      <div class="mfe-diagram reveal-scale">
         <div class="mfe-main">qiankun 主应用<small>AngularJS</small></div>
         <div class="mfe-arrow"></div>
         <div class="mfe-branch">
@@ -497,160 +421,172 @@
           <div class="mfe-sub"><span class="dot" style="background:#07c160;width:8px;height:8px;border-radius:2px;display:inline-block"></span>企微 H5</div>
         </div>
       </div>
-      <ul class="project-list">
-        <li>基于 <b>AngularJS</b> 进行多业务模块开发，覆盖CRM、财务、人员、项目、文档管理等全业务线。</li>
-        <li>主导 <b>qiankun微前端</b> 架构改造，处理变量污染、内存泄漏、样式隔离、路由冲突，平级接入 <b>Vue/React</b> 子系统。</li>
-        <li>企微自建应用开发，通过 <b>JSSDK</b> 实现客户聊天与应用间数据互通。</li>
-        <li><b>ChatGPT</b> 辅助实现计时钟表动效；基于原生<b>富文本编辑器</b>扩展开发文档纠错、词条高亮、联动滚动。</li>
-        <li>基于 <b>fetch+ReadableStream</b> 自建 <b>SSE</b> 客户端，实现流式对话、打字机渲染队列。</li>
+      <ul class="project-list stagger-children">
+        <li class="reveal" style="--i:0">基于 <b>AngularJS</b> 进行多业务模块开发，覆盖CRM、财务、人员、项目、文档管理等全业务线。</li>
+        <li class="reveal" style="--i:1">主导 <b>qiankun微前端</b> 架构改造，处理变量污染、内存泄漏、样式隔离、路由冲突，平级接入 <b>Vue/React</b> 子系统。</li>
+        <li class="reveal" style="--i:2">企微自建应用开发，通过 <b>JSSDK</b> 实现客户聊天与应用间数据互通。</li>
+        <li class="reveal" style="--i:3"><b>ChatGPT</b> 辅助实现计时钟表动效；基于原生<b>富文本编辑器</b>扩展开发文档纠错、词条高亮、联动滚动。</li>
+        <li class="reveal" style="--i:4">基于 <b>fetch+ReadableStream</b> 自建 <b>SSE</b> 客户端，实现流式对话、打字机渲染队列。</li>
       </ul>
     </div>
 
-    <!-- Early Projects with Capability Grid -->
-    <div class="project-card">
-      <div class="project-top">
-        <span class="project-name">劳动用工管理系统 / 数字可视化营销系统 / 大数据平台</span>
-        <span class="project-date">2019.06-2022.08</span>
-      </div>
+    <!-- Early -->
+    <div class="project-card tilt-card reveal-right">
+      <div class="project-top"><span class="project-name">劳动用工管理系统 / 数字可视化营销系统 / 大数据平台</span><span class="project-date">2019.06-2022.08</span></div>
       <div class="project-intro">toB后台管理系统，均为从0到1独立搭建开发。</div>
       <div class="cap-grid">
-        <div class="cap-item"><div class="cap-icon">🔐</div><div class="cap-label">RBAC权限</div></div>
-        <div class="cap-item"><div class="cap-icon">📊</div><div class="cap-label">数据可视化</div></div>
-        <div class="cap-item"><div class="cap-icon">📋</div><div class="cap-label">多维表格</div></div>
-        <div class="cap-item"><div class="cap-icon">⚡</div><div class="cap-label">虚拟列表</div></div>
-        <div class="cap-item"><div class="cap-icon">📤</div><div class="cap-label">断点续传</div></div>
-        <div class="cap-item"><div class="cap-icon">🔒</div><div class="cap-label">加解密</div></div>
-        <div class="cap-item"><div class="cap-icon">🔄</div><div class="cap-label">流程引擎</div></div>
-        <div class="cap-item"><div class="cap-icon">🏗️</div><div class="cap-label">从0到1</div></div>
+        <div class="cap-item reveal-scale" style="--i:0"><div class="cap-icon">🔐</div><div class="cap-label">RBAC权限</div></div>
+        <div class="cap-item reveal-scale" style="--i:1"><div class="cap-icon">📊</div><div class="cap-label">数据可视化</div></div>
+        <div class="cap-item reveal-scale" style="--i:2"><div class="cap-icon">📋</div><div class="cap-label">多维表格</div></div>
+        <div class="cap-item reveal-scale" style="--i:3"><div class="cap-icon">⚡</div><div class="cap-label">虚拟列表</div></div>
+        <div class="cap-item reveal-scale" style="--i:4"><div class="cap-icon">📤</div><div class="cap-label">断点续传</div></div>
+        <div class="cap-item reveal-scale" style="--i:5"><div class="cap-icon">🔒</div><div class="cap-label">加解密</div></div>
+        <div class="cap-item reveal-scale" style="--i:6"><div class="cap-icon">🔄</div><div class="cap-label">流程引擎</div></div>
+        <div class="cap-item reveal-scale" style="--i:7"><div class="cap-icon">🏗️</div><div class="cap-label">从0到1</div></div>
       </div>
-      <ul class="project-list">
-        <li>实现 <b>RBAC权限体系</b>，支持角色级、页面级、功能级细粒度权限控制。</li>
-        <li>开发多维表格、复杂表单等核心业务组件，支撑多业务线复用。</li>
-        <li>基于 <b>Echarts</b> 开发数据可视化大屏与报表看板。</li>
-        <li>大数据量场景下采用 <b>虚拟列表</b> 方案解决长列表渲染性能问题。</li>
-        <li>实现大文件 <b>断点续传</b>，保障弱网环境下上传可靠性。</li>
-        <li>业务数据前端加解密处理（<b>AES/DES</b>），保障敏感信息传输安全。</li>
-        <li>开发简单流程编排引擎，支撑审批、工单等业务流转。</li>
+      <ul class="project-list stagger-children">
+        <li class="reveal" style="--i:0">实现 <b>RBAC权限体系</b>，支持角色级、页面级、功能级细粒度权限控制。</li>
+        <li class="reveal" style="--i:1">开发多维表格、复杂表单等核心业务组件，支撑多业务线复用。</li>
+        <li class="reveal" style="--i:2">基于 <b>Echarts</b> 开发数据可视化大屏与报表看板。</li>
+        <li class="reveal" style="--i:3">大数据量场景下采用 <b>虚拟列表</b> 方案解决长列表渲染性能问题。</li>
+        <li class="reveal" style="--i:4">实现大文件 <b>断点续传</b>，保障弱网环境下上传可靠性。</li>
+        <li class="reveal" style="--i:5">业务数据前端加解密处理（<b>AES/DES</b>），保障敏感信息传输安全。</li>
+        <li class="reveal" style="--i:6">开发简单流程编排引擎，支撑审批、工单等业务流转。</li>
       </ul>
     </div>
   </div>
 
-  <!-- Education -->
   <div class="section">
-    <div class="section-header"><h2>教育经历</h2></div>
-    <div class="edu-card">
+    <div class="section-header reveal"><h2>教育经历</h2></div>
+    <div class="edu-card reveal-scale">
       <div class="edu-info"><span class="edu-school">天津科技大学</span> · 本科 · 网络工程</div>
       <div class="edu-date">2016-2020</div>
     </div>
   </div>
 
-  <!-- Work History -->
   <div class="section">
-    <div class="section-header"><h2>工作经历</h2></div>
-    <div class="timeline">
-      <div class="timeline-item">
+    <div class="section-header reveal"><h2>工作经历</h2></div>
+    <div class="timeline stagger-children">
+      <div class="timeline-item reveal" style="--i:0">
         <div class="tl-header"><span><span class="tl-company">北京米连科技有限公司</span> <span class="tl-role">前端工程师</span></span><span class="tl-date">2025.01-至今</span></div>
         <div class="tl-desc">负责鸿蒙原生应用开发、H5基建与工程化、前端规范制定及AI提效探索。</div>
       </div>
-      <div class="timeline-item">
+      <div class="timeline-item reveal" style="--i:1">
         <div class="tl-header"><span><span class="tl-company">智联网聘（北京）技术有限公司</span> <span class="tl-role">前端开发工程师</span></span><span class="tl-date">2024.04-2024.12</span></div>
         <div class="tl-desc">负责C端Web站群及多端小程序的维护与迭代。<b>离职原因：公司业务调整裁员</b></div>
       </div>
-      <div class="timeline-item">
+      <div class="timeline-item reveal" style="--i:2">
         <div class="tl-header"><span><span class="tl-company">北京新橙科技有限公司</span> <span class="tl-role">前端开发工程师</span></span><span class="tl-date">2022.08-2023.12</span></div>
         <div class="tl-desc">负责法律行业数字化系统全线前端开发（OA、CRM、AIGC等）。<b>离职原因：公司业务调整裁员</b></div>
       </div>
-      <div class="timeline-item">
+      <div class="timeline-item reveal" style="--i:3">
         <div class="tl-header"><span><span class="tl-company">北京医百科技有限公司</span> <span class="tl-role">前端开发工程师</span></span><span class="tl-date">2021.03-2022.08</span></div>
         <div class="tl-desc">负责医药营销数据平台B端系统开发。<b>离职原因：个人原因</b></div>
       </div>
-      <div class="timeline-item">
+      <div class="timeline-item reveal" style="--i:4">
         <div class="tl-header"><span><span class="tl-company">贵州人和致远数据服务有限公司</span> <span class="tl-role">前端开发工程师</span></span><span class="tl-date">2019.06-2021.03</span></div>
         <div class="tl-desc">负责实名制综合管理平台前端开发。<b>离职原因：换城市发展</b></div>
       </div>
     </div>
   </div>
 
-  <!-- Note -->
   <div class="section">
-    <div class="section-header"><h2>其他说明</h2></div>
-    <div class="note-card">AI已深度融入我的日常开发流程并带来显著提效，算力资源（AI Token）是我高效产出的核心基础设施。期望公司能够提供不低于个人月薪20%的AI算力支持，这也是对AI驱动研发模式的基本投入。</div>
+    <div class="section-header reveal"><h2>其他说明</h2></div>
+    <div class="note-card reveal-scale">AI已深度融入我的日常开发流程并带来显著提效，算力资源（AI Token）是我高效产出的核心基础设施。期望公司能够提供不低于个人月薪20%的AI算力支持，这也是对AI驱动研发模式的基本投入。</div>
   </div>
 
   <div class="footer">Crafted with AI · Powered by Claude Code</div>
 </div>
 
 <script>
-// Access Control
+// === Access Control ===
 const pwd = new URLSearchParams(window.location.search).get('pwd');
 if (pwd !== 'kt666') {
-  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('lock-screen').style.display = 'block';
   document.getElementById('main-content').style.display = 'none';
   throw new Error('Access denied');
 }
 document.getElementById('lock-screen').style.display = 'none';
 document.getElementById('main-content').style.display = 'block';
 
-// Neural Network Background
-const canvas = document.getElementById('neural-bg');
-const ctx = canvas.getContext('2d');
-let particles = [];
-let mouse = { x: -1000, y: -1000 };
-
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-resize(); window.addEventListener('resize', resize);
-
-class Particle {
-  constructor() {
-    this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4;
-    this.r = Math.random() * 2 + 1;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-    const dx = mouse.x - this.x, dy = mouse.y - this.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 200) { const f = (200-dist)/200*0.02; this.vx += dx*f; this.vy += dy*f; }
-    this.vx *= 0.99; this.vy *= 0.99;
-  }
-  draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle='rgba(99,102,241,0.15)'; ctx.fill(); }
-}
-for(let i=0;i<80;i++) particles.push(new Particle());
-
-function animate() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{p.update();p.draw()});
-  for(let i=0;i<particles.length;i++) for(let j=i+1;j<particles.length;j++){
-    const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
-    const d=Math.sqrt(dx*dx+dy*dy);
-    if(d<150){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(99,102,241,${(1-d/150)*0.08})`;ctx.lineWidth=0.5;ctx.stroke();}
-  }
-  requestAnimationFrame(animate);
-}
-animate();
-
-// Mouse Glow
-const glow = document.getElementById('mouse-glow');
-document.addEventListener('mousemove', e => {
-  mouse.x = e.clientX; mouse.y = e.clientY;
-  glow.style.left = e.clientX+'px'; glow.style.top = e.clientY+'px';
+// === Scroll Progress Bar ===
+const progressBar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (window.scrollY / h * 100) + '%';
 });
 
-// Scroll Reveal + Performance Bars Animation
-const observer = new IntersectionObserver(entries => {
+// === Cursor Glow (smooth follow) ===
+const glow = document.getElementById('cursor-glow');
+let gx = 0, gy = 0, mx = 0, my = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function updateGlow() {
+  gx += (mx - gx) * 0.08; gy += (my - gy) * 0.08;
+  glow.style.left = gx + 'px'; glow.style.top = gy + 'px';
+  requestAnimationFrame(updateGlow);
+}
+updateGlow();
+
+// === 3D Card Tilt ===
+document.querySelectorAll('.tilt-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${x*6}deg) rotateX(${-y*6}deg) scale(1.01)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateY(0) rotateX(0) scale(1)';
+  });
+});
+
+// === Scroll Reveal (multi-type) ===
+const revealObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      // Animate perf bars
-      entry.target.querySelectorAll('.perf-item').forEach((el,i) => {
+      // Perf bars
+      entry.target.querySelectorAll('.perf-item').forEach((el, i) => {
         setTimeout(() => el.classList.add('animated'), i * 200);
       });
     }
   });
-}, { threshold: 0.1 });
-document.querySelectorAll('.section').forEach(s => observer.observe(s));
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+  revealObserver.observe(el);
+});
+
+// === Number Counter Animation ===
+let statsCounted = false;
+const statsObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !statsCounted) {
+      statsCounted = true;
+      document.querySelectorAll('.wf-stat-num[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        let current = 0;
+        const step = Math.ceil(target / 40);
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) { current = target; clearInterval(timer); }
+          el.textContent = current;
+        }, 30);
+      });
+    }
+  });
+}, { threshold: 0.5 });
+const aiStats = document.getElementById('ai-stats');
+if (aiStats) statsObserver.observe(aiStats);
+
+// === Parallax Mesh Blobs ===
+window.addEventListener('scroll', () => {
+  const s = window.scrollY;
+  document.querySelectorAll('.mesh-blob').forEach((b, i) => {
+    const speed = [0.03, -0.02, 0.015, -0.025][i] || 0.02;
+    b.style.transform = `translateY(${s * speed}px)`;
+  });
+});
 </script>
 </body>
 </html>
